@@ -41,15 +41,40 @@ private:
     
     static timer relay_timers[output_count];
 
+    enum{
+        relay_set = 0,
+        relay_reset = 1
+    };
+
     static void relay_1_callback(){
-        relay_1_in_use = false;
-        relay_timers[relay_1_enum].stop_timer();
-        relay_outputs[relay_1_enum]->write(false);
+        static uint8_t state = relay_manager::relay_set;
+        switch(state){
+        case relay_manager::relay_set:
+            relay_outputs[relay_1_enum]->write(false);
+            state = relay_manager::relay_reset;
+            break;
+
+        case relay_manager::relay_reset:
+            relay_1_in_use = false;
+            relay_timers[relay_1_enum].stop_timer();
+            state = relay_manager::relay_set;
+            break;
+        }
     }
     static void relay_2_callback(){
-        relay_2_in_use = false;
-        relay_timers[relay_2_enum].stop_timer();
-        relay_outputs[relay_2_enum]->write(false);
+        static uint8_t state = relay_manager::relay_set;
+        switch(state){
+            case relay_manager::relay_set:
+                relay_outputs[relay_2_enum]->write(false);
+                state = relay_manager::relay_reset;
+                break;
+
+            case relay_manager::relay_reset:
+                relay_2_in_use = false;
+                relay_timers[relay_2_enum].stop_timer();
+                state = relay_manager::relay_set;
+                break;
+        }
     }
 
 public:
