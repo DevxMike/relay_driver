@@ -12,8 +12,13 @@
 #define relay_1_pin 10
 #define relay_2_pin 11
 
-#define relay_1_delay 1000
+#define relay_1_delay 2000
 #define relay_2_delay 2000
+
+enum{
+    relay_1_enum = 0,
+    relay_2_enum = 1
+};
 
 constexpr uint8_t timer_count = 4;
 constexpr unsigned long timer_period = 12000;
@@ -38,13 +43,13 @@ private:
 
     static void relay_1_callback(){
         relay_1_in_use = false;
-        relay_timers[0].stop_timer();
-        relay_outputs[0]->write(false);
+        relay_timers[relay_1_enum].stop_timer();
+        relay_outputs[relay_1_enum]->write(false);
     }
     static void relay_2_callback(){
         relay_2_in_use = false;
-        relay_timers[1].stop_timer();
-        relay_outputs[1]->write(false);
+        relay_timers[relay_2_enum].stop_timer();
+        relay_outputs[relay_2_enum]->write(false);
     }
 
 public:
@@ -56,6 +61,8 @@ public:
 
     static bool turn_on_relay_1();
     static bool turn_on_relay_2();
+
+    static void get_button_timers(long* array, uint8_t len);
 };
 
 #endif

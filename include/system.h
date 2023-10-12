@@ -13,6 +13,9 @@ public:
     static void yellow_btn_2_cback();
     static void white_btn_2_cback();
     static void reset_btn_cback();
+    static bool users_ready();
+    static bool is_user_1_ready();
+    static bool is_user_2_ready();
 };
 
 #endif

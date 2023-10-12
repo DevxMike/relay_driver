@@ -3,6 +3,8 @@
 #include "system.h"
 #include "timer.h"
 #include "relays.h"
+#include "animation.h"
+
 
 #define button_green_1_pin 8
 #define button_yellow_1_pin 2
@@ -11,10 +13,6 @@
 #define button_yellow_2_pin 4
 #define button_white_2_pin 6
 #define reset_button_pin 7
-
-void callback(){
-  Serial.println("Button pressed");
-}
 
 push_button btn_green_1(button_green_1_pin, button_callbacks::green_btn_1_cback);
 push_button btn_yellow_1(button_yellow_1_pin, button_callbacks::yellow_btn_1_cback);
@@ -48,12 +46,18 @@ push_button* button_manager::keyboard[interface_size] = {
   &btn_reset
 };
 
-bool relay_1_in_use{ false };
-bool relay_2_in_use{ false };
+bool relay_manager::relay_1_in_use{ false };
+bool relay_manager::relay_2_in_use{ false };
 
 uint8_t relay_manager::flags{ 0xff };
 
 timer relay_manager::relay_timers[output_count]{};
+
+timer animation_manager::animation_timer{};
+long animation_manager::buffer[timer_count] { 0 };
+
+Adafruit_NeoPixel animation_manager::strip1(Adafruit_NeoPixel(54, STRIP_1_PIN, NEO_GRB + NEO_KHZ800));
+Adafruit_NeoPixel animation_manager::strip2(Adafruit_NeoPixel(54, STRIP_2_PIN, NEO_GRB + NEO_KHZ800));
 
 void setup() {
   Serial.begin(9800);
@@ -72,11 +76,15 @@ void setup() {
   relay_2.init();
   // test_timer1.set_timer(1000, [](){ Serial.println(test_timer.get_time_left()); });
   // test_timer.set_timer(24000, [](){ Serial.println("Main timer callback"); });
+
+  animation_manager::strip1.begin();
+  animation_manager::strip2.begin();
 }
 
 void loop() {
   button_manager::main();
   relay_manager::main();
+  animation_manager::main();
   // test_timer.update();
   // test_timer1.update();
 }

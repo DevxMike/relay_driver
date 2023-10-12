@@ -35,6 +35,10 @@ public:
         if(timer_running) return period - (millis() - current_time);
         else return 0;
     }
+    long get_elapsed(){
+        if(timer_running) return (millis() - current_time);
+        else return -1;
+    }
 };
 
 #endif
